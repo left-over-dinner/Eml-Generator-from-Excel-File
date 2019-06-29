@@ -6,26 +6,21 @@ import javax.mail.*;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Properties;
 
 public abstract class EmailMessage {
     private MimeMessage message;
-    public EmailMessage(){
-        message = new MimeMessage((Session) null);
+    public EmailMessage(){ }
+    public MimeMessage createNewEmptyMessage(){
+        return new MimeMessage((Session) null);
     }
+    public void setMessage(MimeMessage message){
+        this.message = message;
+    };
     public MimeMessage getMessage (){
         return message;
-    }
-    public void resetMessageAttr(){
-        try{
-            message.setSubject(null);
-            message.setContent((Multipart) null);
-            message.setRecipient( Message.RecipientType.TO, null);
-            message.setRecipient( Message.RecipientType.CC, null);
-        }catch(MessagingException e){
-            System.out.println("error in resetting the eml");
-        }
     }
     public boolean addRecipientTO(String email){
         return addRecipient(email, Message.RecipientType.TO);
@@ -45,6 +40,15 @@ public abstract class EmailMessage {
         }
         return false;
     }
+    public boolean setFrom(String fromEmailAddress){
+        try{
+            message.setFrom(fromEmailAddress);
+            return true;
+        }catch(MessagingException e){
+            System.out.println("Not able to set subject using: "+fromEmailAddress);
+        }
+        return false;
+    }
     public boolean setSubject(String subject){
         try{
             message.setSubject(subject);
@@ -54,14 +58,14 @@ public abstract class EmailMessage {
         }
         return false;
     }
-    public boolean setBodyContent(EmailBodyContent bodyContent){
+    public boolean setBodyContent(String bodyContent){
         try{
-            message.setContent(bodyContent.createBody(), "text/html");
+            message.setContent(bodyContent, "text/html");
             return true;
         }catch(MessagingException e){
             System.out.println("Not able to set body content using: "+bodyContent);
         }
         return false;
     }
-    public abstract MimeMessage createMimeMessage(Iterator<Row> dataRows);
+    public abstract ArrayList<MimeMessage> createMimeMessages(String excelSrc);
 }
