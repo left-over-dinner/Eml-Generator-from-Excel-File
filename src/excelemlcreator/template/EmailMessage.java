@@ -60,12 +60,21 @@ public abstract class EmailMessage {
     }
     public boolean setBodyContent(String bodyContent){
         try{
-            message.setContent(bodyContent, "text/html");
+            message.setContent(bodyContent, "text/html; charset=UTF-8");
             return true;
         }catch(MessagingException e){
             System.out.println("Not able to set body content using: "+bodyContent);
         }
         return false;
     }
-    public abstract ArrayList<MimeMessage> createMimeMessages(String excelSrc);
+    public boolean setReplyTo(String emailAddress){
+        try{
+            message.setReplyTo(new Address[]{new InternetAddress(emailAddress)});
+            return true;
+        }catch(MessagingException e){
+            System.out.println("Not able to set body content using: "+emailAddress);
+        }
+        return false;
+    }
+    public abstract MimeMessage[] createMimeMessages(String excelSrc);
 }
